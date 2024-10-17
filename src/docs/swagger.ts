@@ -1,15 +1,13 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 
-const options = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'Swagger Express API',
-            version: '1.0.0',
-            description: 'A simple Express API with Swagger documentation',
-        },
+export const specs = swaggerJsdoc({
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Swagger Express API',
+      version: '1.0.0',
+      description: 'A simple Express API with Swagger documentation',
     },
-    apis: ['./src/routes/messageRoutes.ts'], 
-};
-
-export const specs = swaggerJsdoc(options);
+  },
+  apis: ['./src/routes/messageRoutes.ts'],
+});

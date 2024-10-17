@@ -1,18 +1,12 @@
 import Whatsapp from "whatsapp-web.js";
 import qrcode from 'qrcode-terminal';
 
-const { Client, LocalAuth } = Whatsapp
+const { Client, LocalAuth } = Whatsapp;
 
 class WhatsAppClient {
-    private client: any;
-    private isReady: boolean;
+    private client = new Client({ authStrategy: new LocalAuth() });
+    private isReady = false;
 
-    constructor() {
-        this.client = new Client({  authStrategy: new LocalAuth()});
-        this.isReady = false;
-    }
-
-    // Initialize the WhatsApp client and return a Promise that resolves when the client is ready
     initialize(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.client.on('qr', (qr: string) => {
@@ -22,12 +16,12 @@ class WhatsAppClient {
             this.client.on('ready', () => {
                 console.log('WhatsApp Client is ready!');
                 this.isReady = true;
-                resolve(); // Resolve the Promise once the client is ready
+                resolve();
             });
 
             this.client.on('auth_failure', (msg: string) => {
                 console.error('Authentication failure:', msg);
-                reject(new Error('WhatsApp authentication failed')); // Reject the Promise on failure
+                reject(new Error('WhatsApp authentication failed'));
             });
 
             this.client.on('disconnected', () => {
