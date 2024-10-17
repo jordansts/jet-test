@@ -1,10 +1,16 @@
-import amqp from "amqplib";
-// import { captureException } from '@sentry/node'; // Optional if using Sentry for logging
+import amqp, { Connection } from "amqplib";
+// import { captureException } from '@sentry/node'; 
 
 export class RabbitMQConnection {
+  private rabbitHost: string; // Type annotations for class properties
+  private rabbitPort: number;
+  private rabbitUsername: string;
+  private rabbitPassword: string;
+  private retryAttempts: number;
+  private retryDelay: number;
+
   constructor() {
-    const { RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD } =
-      process.env;
+    const { RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD } = process.env;
 
     if (!RABBIT_HOST || !RABBIT_PORT || !RABBIT_USERNAME || !RABBIT_PASSWORD) {
       throw new Error("Missing RabbitMQ connection details in environment variables.");
@@ -18,13 +24,11 @@ export class RabbitMQConnection {
     this.retryDelay = 2000;
   }
 
-  // Utility to wait before retrying
-  sleep(ms) {
+  private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // Attempt to connect to RabbitMQ with retries
-  async createConnection() {
+  async createConnection(): Promise<Connection> {
     let attempt = 0;
     while (attempt < this.retryAttempts) {
       try {
@@ -39,12 +43,13 @@ export class RabbitMQConnection {
         console.error("Failed to connect to RabbitMQ:", error);
         attempt++;
         if (attempt >= this.retryAttempts) {
-        //   captureException(error);
+          //   captureException(error);
           throw new Error("Exceeded maximum connection attempts to RabbitMQ.");
         }
         console.log(`Retrying connection in ${this.retryDelay / 1000} seconds...`);
         await this.sleep(this.retryDelay);
       }
     }
+    throw new Error("Connection failed"); // In case the loop ends unexpectedly
   }
 }

@@ -1,12 +1,15 @@
-import { RabbitMQConnection } from "./RabbitMQConnection.js";
+import { RabbitMQConnection } from "./RabbitMQConnection.js"; // Adjusted import
+// import { captureException } from '@sentry/node'; // Uncomment if using Sentry for error tracking
 
 export class MessageProducer extends RabbitMQConnection {
+  private queueName: string; // Type annotation for queueName
+
   constructor() {
     super();
     this.queueName = "wpp_queue";
   }
 
-  async send(payload) {
+  async send(payload: any): Promise<void> { // Add type annotation for payload and return type
     let connection = null;
     let channel = null;
 
@@ -21,7 +24,7 @@ export class MessageProducer extends RabbitMQConnection {
       console.log(`Message sent to ${this.queueName}:`, data);
     } catch (error) {
       console.error("Failed to send message:", error);
-      captureException(error);
+      // captureException(error); // Uncomment if using Sentry for error tracking
       throw error;
     } finally {
       if (channel) await channel.close();
