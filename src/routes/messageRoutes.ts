@@ -17,7 +17,7 @@ const router = express.Router();
  *             properties:
  *               phoneNumber:
  *                 type: string
- *                 example: "+550012345678"
+ *                 example: "+551199999999"
  *               messageText:
  *                 type: string
  *                 example: "Your Message Here"
