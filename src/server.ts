@@ -8,12 +8,12 @@ dotenv.config();
 const API_PORT = process.env.API_PORT || 3000;
 
 app.listen(API_PORT, () => {
-  console.log(`ExpressJS started on port ${API_PORT}`);
+  console.log(`ExpressJS Started | PORT: ${API_PORT}`);
 });
 
 const whatsappClient = new WhatsAppClient();
 whatsappClient.initialize().then(() => {
-  console.log("WhatsApp Client initialized and ready!");
+  console.log("Whatsapp Client Started");
   const consumer = new MessageConsumer(whatsappClient);
   consumer.connectAndConsume();
 }).catch((error) => {

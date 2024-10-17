@@ -14,7 +14,6 @@ class WhatsAppClient {
             });
 
             this.client.on('ready', () => {
-                console.log('WhatsApp Client is ready!');
                 this.isReady = true;
                 resolve();
             });

@@ -7,4 +7,10 @@ services:
       - 15672:15672
     environment:
       - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=curso
+      - RABBITMQ_DEFAULT_PASS=rbtmq2024!@#
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - 6379:6379

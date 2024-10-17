@@ -28,7 +28,6 @@ export class RabbitMQConnection {
   async createConnection(): Promise<Connection> {
     for (let attempt = 0; attempt < this.retryAttempts; attempt++) {
       try {
-        console.log(`Attempting to connect to RabbitMQ... (Attempt ${attempt + 1})`);
         return await amqp.connect({
           hostname: this.rabbitHost,
           port: this.rabbitPort,
