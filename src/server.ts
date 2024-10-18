@@ -2,6 +2,7 @@ import app from "./app.js";
 import { MessageConsumer } from "./services/MessageConsumer.js";
 import dotenv from 'dotenv';
 import WhatsAppClient from "./services/WhatsAppClient.js";
+import * as Sentry from "@sentry/node";  // Assuming Sentry is configured globally
 
 dotenv.config();
 
@@ -12,10 +13,12 @@ app.listen(API_PORT, () => {
 });
 
 const whatsappClient = new WhatsAppClient();
+
 whatsappClient.initialize().then(() => {
-  console.log("Whatsapp Client Started");
+  console.log("WhatsApp Client Started");
   const consumer = new MessageConsumer(whatsappClient);
   consumer.connectAndConsume();
 }).catch((error) => {
   console.error("Failed to initialize WhatsApp Client:", error);
+  Sentry.captureException(error);
 });

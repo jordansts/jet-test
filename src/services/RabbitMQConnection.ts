@@ -1,4 +1,5 @@
 import amqp, { Connection } from "amqplib";
+import * as Sentry from "@sentry/node";
 
 export class RabbitMQConnection {
   private rabbitHost: string;
@@ -12,7 +13,9 @@ export class RabbitMQConnection {
     const { RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD } = process.env;
 
     if (!RABBIT_HOST || !RABBIT_PORT || !RABBIT_USERNAME || !RABBIT_PASSWORD) {
-      throw new Error("Missing RabbitMQ connection details in environment variables.");
+      const error = new Error("Missing RabbitMQ connection details in environment variables.");
+      Sentry.captureException(error);
+      throw error;
     }
 
     this.rabbitHost = RABBIT_HOST;
@@ -36,13 +39,18 @@ export class RabbitMQConnection {
         });
       } catch (error) {
         console.error("Failed to connect to RabbitMQ:", error);
+        Sentry.captureException(error);
         if (attempt === this.retryAttempts - 1) {
-          throw new Error("Exceeded maximum connection attempts to RabbitMQ.");
+          const finalError = new Error("Exceeded maximum connection attempts to RabbitMQ.");
+          Sentry.captureException(finalError);
+          throw finalError;
         }
         console.log(`Retrying connection in ${this.retryDelay / 1000} seconds...`);
         await this.sleep(this.retryDelay);
       }
     }
-    throw new Error("Connection failed"); // Fallback error in case of unexpected behavior
+    const fallbackError = new Error("Connection failed after retries.");
+    Sentry.captureException(fallbackError);
+    throw fallbackError;
   }
 }

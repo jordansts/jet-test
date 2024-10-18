@@ -1,5 +1,6 @@
 import Whatsapp from "whatsapp-web.js";
 import qrcode from 'qrcode-terminal';
+import * as Sentry from "@sentry/node";
 
 const { Client, LocalAuth } = Whatsapp;
 
@@ -20,6 +21,7 @@ class WhatsAppClient {
 
             this.client.on('auth_failure', (msg: string) => {
                 console.error('Authentication failure:', msg);
+                Sentry.captureException(new Error('WhatsApp authentication failed'));
                 reject(new Error('WhatsApp authentication failed'));
             });
 
@@ -44,6 +46,7 @@ class WhatsAppClient {
             console.log(`Message sent to ${number}: ${text}`);
         } catch (err) {
             console.error('Failed to send message:', err);
+            Sentry.captureException(err);
         }
     }
 }

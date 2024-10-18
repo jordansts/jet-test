@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { MessageQueueService } from "../services/MessageQueue.js";
+import * as Sentry from "@sentry/node";
 
 export const sendMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { phoneNumber, messageText } = req.body;
@@ -13,6 +14,7 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
       message: "Message successfully enqueued for processing."
     });
   } catch (error) {
+    Sentry.captureException(error);
     next(error);
   }
 };

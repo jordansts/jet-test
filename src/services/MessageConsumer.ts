@@ -1,6 +1,7 @@
 import { RabbitMQConnection } from "./RabbitMQConnection.js";
 import { ConsumeMessage } from 'amqplib';
 import WhatsAppClient from "./WhatsAppClient.js";
+import * as Sentry from "@sentry/node"; 
 
 export class MessageConsumer extends RabbitMQConnection {
   private queueName = "wpp_queue";
@@ -25,12 +26,18 @@ export class MessageConsumer extends RabbitMQConnection {
           console.log("Received Message:", { phoneNumber, messageText });
 
           if (phoneNumber && messageText) {
-            await this.whatsappClient.sendMessageToNumber(phoneNumber, messageText);
+            try {
+              await this.whatsappClient.sendMessageToNumber(phoneNumber, messageText);
+            } catch (sendError) {
+              console.error("Failed to send message:", sendError);
+              Sentry.captureException(sendError);
+            }
           }
         }
       }, { noAck: true });
     } catch (error) {
       console.error("Error connecting to RabbitMQ:", error);
+      Sentry.captureException(error);
     }
   }
 }

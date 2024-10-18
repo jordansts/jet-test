@@ -5,7 +5,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/messages/send:
+ * /api/send-message:
  *   post:
  *     summary: Send a message to RabbitMQ
  *     requestBody:
@@ -27,7 +27,7 @@ const router = express.Router();
  *       500:
  *         description: Failed to send message
  */
-router.post("/send", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/send-message", async (req: Request, res: Response, next: NextFunction) => {
   try {
     await sendMessage(req, res, next);
   } catch (error) {
