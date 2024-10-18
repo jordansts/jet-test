@@ -7,10 +7,26 @@ services:
       - 15672:15672
     environment:
       - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=rbtmq2024!@#
+      - RABBITMQ_DEFAULT_PASS=rbtmq2024!@
 
   redis:
     container_name: redis
     image: redis:latest
     ports:
       - 6379:6379
+
+  pgsql:
+    container_name: pgsql
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=jet-test
+      - POSTGRES_PASSWORD=jettest2024
+      - POSTGRES_DB=jet-test
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    name: pgdata 

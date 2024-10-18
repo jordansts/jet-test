@@ -5,8 +5,12 @@ import * as Sentry from "@sentry/node";
 const { Client, LocalAuth } = Whatsapp;
 
 class WhatsAppClient {
-    private client = new Client({ authStrategy: new LocalAuth() });
+    private client;
     private isReady = false;
+
+    constructor() {
+        this.client = new Client({ authStrategy: new LocalAuth() });
+    }
 
     initialize(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -34,13 +38,13 @@ class WhatsAppClient {
         });
     }
 
-    async sendMessageToNumber(number: string, text: string) {
+    async sendMessageToNumber(number: string, text: string): Promise<void> {
         if (!this.isReady) {
             console.error('WhatsApp Client is not ready yet!');
             return;
         }
 
-        const chatId = number.substring(1) + "@c.us";
+        const chatId = `${number.substring(1)}@c.us`;
         try {
             await this.client.sendMessage(chatId, text);
             console.log(`Message sent to ${number}: ${text}`);

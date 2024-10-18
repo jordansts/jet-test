@@ -1,5 +1,5 @@
-import express, { Request, Response, NextFunction } from "express";
-import { sendMessage } from "../controllers/messageController.js";
+import express from "express";
+import MessageController from "../../controllers/MessageController.js"
 
 const router = express.Router();
 
@@ -27,13 +27,6 @@ const router = express.Router();
  *       500:
  *         description: Failed to send message
  */
-router.post("/send-message", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await sendMessage(req, res, next);
-  } catch (error) {
-    console.error("Error sending message:", error);
-    res.status(500).json({ error: "Failed to send message" });
-  }
-});
+router.post("/send-message", MessageController.sendMessage.bind(MessageController)); // Bind method
 
 export default router;

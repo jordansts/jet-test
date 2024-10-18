@@ -1,19 +1,44 @@
-import './middlewares/instrument.js'
-import express, { Application } from "express";
-import messageRoutes from "./routes/messageRoutes.js";
-import errorMiddleware from "./middlewares/errorMiddleware.js";
-import { specs } from "./docs/swagger.js";
-import swaggerUi from 'swagger-ui-express'
-import * as Sentry from "@sentry/node"
+import api from './api/api.js';
+import { MessageConsumer } from './services/MessageConsumer.js';
+import dotenv from 'dotenv';
+import WhatsAppClient from './services/WhatsAppClient.js';
+import * as Sentry from '@sentry/node'; // Assuming Sentry is configured globally
 
-const app: Application = express();
-app.use(express.json({ limit: "50mb" }));
+dotenv.config();
 
-app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
-app.use("/api", messageRoutes);
+class App {
+  private apiPort: string | number;
+  private whatsAppClient: WhatsAppClient;
+  private messageConsumer!: MessageConsumer;
 
-Sentry.setupExpressErrorHandler(app)
+  constructor() {
+    this.apiPort = process.env.API_PORT || 3000;
+    this.whatsAppClient = new WhatsAppClient();
+  }
 
-app.use(errorMiddleware);
+  public start() {
+    this.startApi();
+    this.startWhatsAppClient();
+  }
 
-export default app;
+  private startApi() {
+    api.listen(this.apiPort, () => {
+      console.log(`ExpressJS Started | PORT: ${this.apiPort}`);
+    });
+  }
+
+  private async startWhatsAppClient() {
+    try {
+      await this.whatsAppClient.initialize();
+      console.log('WhatsApp Client Started');
+      this.messageConsumer = new MessageConsumer(this.whatsAppClient);
+      this.messageConsumer.connectAndConsume();
+    } catch (error) {
+      console.error('Failed to initialize WhatsApp Client:', error);
+      Sentry.captureException(error);
+    }
+  }
+}
+
+const app = new App();
+app.start();

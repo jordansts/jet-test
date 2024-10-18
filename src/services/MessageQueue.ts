@@ -1,6 +1,6 @@
 import Queue from "bull";
 import { MessageProducer } from "./MessageProducer.js";
-import * as Sentry from "@sentry/node"; 
+import * as Sentry from "@sentry/node";
 
 const redisConfig = {
     host: process.env.REDIS_HOST || 'localhost',
@@ -9,8 +9,13 @@ const redisConfig = {
 
 const messageQueue = new Queue('messageQueue', { redis: redisConfig });
 
+export interface MessagePayload {
+    phoneNumber: string;
+    messageText: string;
+}
+
 export class MessageQueueService {
-    static validatePayload(payload: { phoneNumber: string; messageText: string }) {
+    static validatePayload(payload: MessagePayload): void {
         const { phoneNumber, messageText } = payload;
 
         if (!phoneNumber || typeof phoneNumber !== 'string') {
@@ -22,18 +27,18 @@ export class MessageQueueService {
         }
     }
 
-    static async enqueueMessage(payload: { phoneNumber: string; messageText: string }) {
+    static async enqueueMessage(payload: MessagePayload): Promise<void> {
         try {
             this.validatePayload(payload);
             await messageQueue.add(payload, { delay: 5000 });
         } catch (error) {
             console.error("Failed to enqueue message:", error);
-            Sentry.captureException(error);  
+            Sentry.captureException(error);
             throw error;
         }
     }
 
-    static processQueue() {
+    static processQueue(): void {
         messageQueue.process(async (job) => {
             const { phoneNumber, messageText } = job.data;
             const messageSender = new MessageProducer();
@@ -43,7 +48,7 @@ export class MessageQueueService {
                 console.log(`Message sent to ${phoneNumber}`);
             } catch (error) {
                 console.error("Error sending message:", error);
-                Sentry.captureException(error);  
+                Sentry.captureException(error);
                 throw new Error("Failed to send message");
             }
         });

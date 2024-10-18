@@ -1,15 +1,19 @@
 import { RabbitMQConnection } from "./RabbitMQConnection.js";
 import { ConsumeMessage } from 'amqplib';
 import WhatsAppClient from "./WhatsAppClient.js";
-import * as Sentry from "@sentry/node"; 
+import * as Sentry from "@sentry/node";
+import { MessageRepository } from "../infra/repositories/MessageRepository.js";
+import CreateMessageRequest from "../shareable/dtos/message/CreateMessageRequest.js";
 
 export class MessageConsumer extends RabbitMQConnection {
   private queueName = "wpp_queue";
   private whatsappClient: WhatsAppClient;
+  private messageRepository: MessageRepository;
 
   constructor(whatsappClient: WhatsAppClient) {
     super();
     this.whatsappClient = whatsappClient;
+    this.messageRepository = new MessageRepository();
   }
 
   async connectAndConsume(): Promise<void> {
@@ -27,6 +31,8 @@ export class MessageConsumer extends RabbitMQConnection {
 
           if (phoneNumber && messageText) {
             try {
+              const createMessageRequest: CreateMessageRequest = { phoneNumber, messageText };
+              await this.messageRepository.createMessage(createMessageRequest);
               await this.whatsappClient.sendMessageToNumber(phoneNumber, messageText);
             } catch (sendError) {
               console.error("Failed to send message:", sendError);

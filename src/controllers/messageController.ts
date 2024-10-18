@@ -1,20 +1,25 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { MessageQueueService } from "../services/MessageQueue.js";
-import * as Sentry from "@sentry/node";
+import CreateMessageRequest from "../shareable/dtos/message/CreateMessageRequest.js";
 
-export const sendMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { phoneNumber, messageText } = req.body;
+class MessageController {
+  
+  public async sendMessage(req: Request, res: Response): Promise<void> {
+    const { phoneNumber, messageText }: CreateMessageRequest = req.body as CreateMessageRequest;
 
-  try {
-    await MessageQueueService.enqueueMessage({ phoneNumber, messageText });
+    if (!phoneNumber || !messageText) {
+      res.status(400).json({ error: "Invalid input data" });
+      return;
+    }
 
-    res.status(201).json({
-      status: "OK",
-      statusCode: 201,
-      message: "Message successfully enqueued for processing."
-    });
-  } catch (error) {
-    Sentry.captureException(error);
-    next(error);
+    try {
+      await MessageQueueService.enqueueMessage({ phoneNumber, messageText });
+      res.status(201).json({ message: "Message successfully sent" });
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      res.status(500).json({ error: "Failed to send message" });
+    }
   }
-};
+}
+
+export default new MessageController();

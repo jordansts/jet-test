@@ -1,8 +1,8 @@
 import { RabbitMQConnection } from "./RabbitMQConnection.js";
-import * as Sentry from "@sentry/node"; 
+import * as Sentry from "@sentry/node";
 
 export class MessageProducer extends RabbitMQConnection {
-  private queueName = "wpp_queue";
+  private readonly queueName = "wpp_queue";
 
   async send(payload: unknown): Promise<void> {
     try {
@@ -16,7 +16,7 @@ export class MessageProducer extends RabbitMQConnection {
       console.log(`Message sent to ${this.queueName}:`, data);
     } catch (error) {
       console.error("Failed to send message:", error);
-      Sentry.captureException(error); 
+      Sentry.captureException(error);
       throw error;
     }
   }

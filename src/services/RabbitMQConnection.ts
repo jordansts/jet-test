@@ -6,8 +6,8 @@ export class RabbitMQConnection {
   private rabbitPort: number;
   private rabbitUsername: string;
   private rabbitPassword: string;
-  private retryAttempts = 5;
-  private retryDelay = 2000;
+  private readonly retryAttempts = 5;
+  private readonly retryDelay = 2000;
 
   constructor() {
     const { RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD } = process.env;
@@ -19,7 +19,7 @@ export class RabbitMQConnection {
     }
 
     this.rabbitHost = RABBIT_HOST;
-    this.rabbitPort = parseInt(RABBIT_PORT, 10);
+    this.rabbitPort = Number(RABBIT_PORT); // Using Number to parse the port
     this.rabbitUsername = RABBIT_USERNAME;
     this.rabbitPassword = RABBIT_PASSWORD;
   }
@@ -40,11 +40,13 @@ export class RabbitMQConnection {
       } catch (error) {
         console.error("Failed to connect to RabbitMQ:", error);
         Sentry.captureException(error);
+        
         if (attempt === this.retryAttempts - 1) {
           const finalError = new Error("Exceeded maximum connection attempts to RabbitMQ.");
           Sentry.captureException(finalError);
           throw finalError;
         }
+
         console.log(`Retrying connection in ${this.retryDelay / 1000} seconds...`);
         await this.sleep(this.retryDelay);
       }
