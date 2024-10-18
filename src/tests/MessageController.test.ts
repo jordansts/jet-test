@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import MessageController from '../controllers/MessageController.js';
+import MessageController from '../controllers/messageController.js';
 import { MessageQueueService } from '../services/MessageQueue.js';
 import CreateMessageRequest from '../shareable/dtos/message/CreateMessageRequest.js';
 
