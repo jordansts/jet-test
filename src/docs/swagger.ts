@@ -9,5 +9,5 @@ export const specs = swaggerJsdoc({
       description: 'A simple Express API with Swagger documentation',
     },
   },
-  apis: ['./src/routes/messageRoutes.ts'],
+  apis: ['./src/api/routes/messageRoutes.ts'], // Adjust this path if necessary
 });
