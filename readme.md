@@ -83,7 +83,7 @@ API documentation is available at `/swagger`. This documentation provides a visu
 
 7. Build the application:
    ```bash
-   npm run build dev
+   npm run build
    ```
 
 8. Run the application:
