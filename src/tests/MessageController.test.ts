@@ -37,7 +37,7 @@ describe('MessageController', () => {
     });
 
     it('should send the message successfully and return 201', async () => {
-        const validMessage: CreateMessageRequest = { phoneNumber: '123456789', messageText: 'Hello' };
+        const validMessage: CreateMessageRequest = { phone: '123456789', message: 'Hello' };
         req.body = validMessage;
 
 
@@ -52,7 +52,7 @@ describe('MessageController', () => {
     });
 
     it('should return 500 if there is a failure sending the message', async () => {
-        const validMessage: CreateMessageRequest = { phoneNumber: '123456789', messageText: 'Hello' };
+        const validMessage: CreateMessageRequest = { phone: '123456789', message: 'Hello' };
         req.body = validMessage;
 
         (MessageQueueService.enqueueMessage as jest.Mock).mockRejectedValueOnce(new Error('Failed to enqueue message'));

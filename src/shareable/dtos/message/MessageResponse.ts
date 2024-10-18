@@ -1,6 +1,6 @@
 export interface MessageResponse {
     id: string;
-    phoneNumber: string;
-    messageText: string;
+    phone: string;
+    message: string;
     createdAt: Date;
   }

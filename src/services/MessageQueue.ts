@@ -10,8 +10,8 @@ const redisConfig = {
 const messageQueue = new Queue('messageQueue', { redis: redisConfig });
 
 export interface MessagePayload {
-    phoneNumber: string;
-    messageText: string;
+    phone: string;
+    message: string;
 }
 
 export class MessageQueueService {
@@ -19,14 +19,14 @@ export class MessageQueueService {
     private static processedJobs = 0;
 
     static validatePayload(payload: MessagePayload): void {
-        const { phoneNumber, messageText } = payload;
+        const { phone, message } = payload;
 
-        if (!phoneNumber || typeof phoneNumber !== 'string') {
-            throw new Error(`Invalid phone number: ${phoneNumber}`);
+        if (!phone || typeof phone !== 'string') {
+            throw new Error(`Invalid phone number: ${phone}`);
         }
 
-        if (!messageText || typeof messageText !== 'string') {
-            throw new Error(`Invalid message text: ${messageText}`);
+        if (!message || typeof message !== 'string') {
+            throw new Error(`Invalid message text: ${message}`);
         }
     }
 
@@ -44,12 +44,12 @@ export class MessageQueueService {
 
     static processQueue(): void {
         messageQueue.process(async (job) => {
-            const { phoneNumber, messageText } = job.data;
+            const { phone, message } = job.data;
             const messageSender = new MessageProducer();
 
             try {
-                await messageSender.send({ phoneNumber, messageText });
-                console.log(`Message sent to ${phoneNumber}`);
+                await messageSender.send({ phone, message });
+                console.log(`Message sent to ${phone}`);
             } catch (error) {
                 console.error("Error sending message:", error);
                 Sentry.captureException(error);

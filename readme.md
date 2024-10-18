@@ -27,8 +27,8 @@ This project implements a messaging service using the WhatsApp Web API, RabbitMQ
 - **Request Body**:
   ```json
   {
-    "phoneNumber": "+551199999999",
-    "messageText": "Send the message text here"
+    "phone": "+551199999999",
+    "message": "Send the message text here"
   }
   ```
 - **Responses**:

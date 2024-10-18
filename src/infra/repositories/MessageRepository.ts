@@ -12,8 +12,8 @@ export class MessageRepository {
   async createMessage(data: CreateMessageRequest): Promise<MessageResponse> {
     const message = await this.prisma.message.create({
       data: {
-        phoneNumber: data.phoneNumber,
-        messageText: data.messageText,
+        phone: data.phone,
+        message: data.message,
       },
     });
     
@@ -37,8 +37,8 @@ export class MessageRepository {
     const message = await this.prisma.message.update({
       where: { id },
       data: {
-        phoneNumber: data.phoneNumber,
-        messageText: data.messageText,
+        phone: data.phone,
+        message: data.message,
       },
     });
     
@@ -56,8 +56,8 @@ export class MessageRepository {
   private toResponseDTO(message: Message): MessageResponse {
     return {
       id: message.id,
-      phoneNumber: message.phoneNumber,
-      messageText: message.messageText,
+      phone: message.phone,
+      message: message.message,
       createdAt: message.createdAt,
     };
   }

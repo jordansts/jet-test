@@ -9,8 +9,8 @@ datasource db {
 
 model Message {
   id          String   @id @default(uuid())
-  phoneNumber String
-  messageText String
+  phone String
+  message String
   createdAt   DateTime @default(now())
 
   @@map("Messages") 

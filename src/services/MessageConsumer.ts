@@ -29,11 +29,11 @@ export class MessageConsumer extends RabbitMQConnection {
         this.queueName, 
         async (msg: ConsumeMessage | null) => {
           if (msg) {
-            const { phoneNumber, messageText } = this.parseMessage(msg);
-            console.log("Received Message:", { phoneNumber, messageText });
+            const { phone, message } = this.parseMessage(msg);
+            console.log("Received Message:", { phone, message });
 
-            if (this.isValidMessage(phoneNumber, messageText)) {
-              await this.handleMessage({ phoneNumber, messageText });
+            if (this.isValidMessage(phone, message)) {
+              await this.handleMessage({ phone, message });
             }
           }
         }, 
@@ -49,15 +49,15 @@ export class MessageConsumer extends RabbitMQConnection {
     return JSON.parse(msg.content.toString()) as CreateMessageRequest;
   }
 
-  private isValidMessage(phoneNumber: string, messageText: string): boolean {
-    return Boolean(phoneNumber && messageText);
+  private isValidMessage(phone: string, message: string): boolean {
+    return Boolean(phone && message);
   }
 
   private async handleMessage(createMessageRequest: CreateMessageRequest): Promise<void> {
-    const { phoneNumber, messageText } = createMessageRequest;
+    const { phone, message } = createMessageRequest;
     try {
       await this.messageRepository.createMessage(createMessageRequest);
-      await this.whatsappClient.sendMessageToNumber(phoneNumber, messageText);
+      await this.whatsappClient.sendMessageToNumber(phone, message);
     } catch (error: any) {
       logError("Failed to send message:", error);
       Sentry.captureException(error);

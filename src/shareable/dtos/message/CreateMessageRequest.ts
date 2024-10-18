@@ -1,4 +1,4 @@
 export default interface CreateMessageRequest {
-  phoneNumber: string;
-  messageText: string;
+  phone: string;
+  message: string;
 }

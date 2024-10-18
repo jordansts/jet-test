@@ -15,10 +15,10 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             properties:
- *               phoneNumber:
+ *               phone:
  *                 type: string
  *                 example: "+551199999999"
- *               messageText:
+ *               message:
  *                 type: string
  *                 example: "Your Message Here"
  *     responses:
