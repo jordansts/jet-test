@@ -27,6 +27,6 @@ const router = express.Router();
  *       500:
  *         description: Failed to send message
  */
-router.post("/send-message", MessageController.sendMessage.bind(MessageController)); // Bind method
+router.post("/send-message", MessageController.sendMessage.bind(MessageController));
 
 export default router;

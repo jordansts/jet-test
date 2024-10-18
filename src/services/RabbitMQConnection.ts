@@ -19,7 +19,7 @@ export class RabbitMQConnection {
     }
 
     this.rabbitHost = RABBIT_HOST;
-    this.rabbitPort = Number(RABBIT_PORT); // Using Number to parse the port
+    this.rabbitPort = Number(RABBIT_PORT);
     this.rabbitUsername = RABBIT_USERNAME;
     this.rabbitPassword = RABBIT_PASSWORD;
   }

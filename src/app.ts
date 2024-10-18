@@ -2,7 +2,7 @@ import api from './api/api.js';
 import { MessageConsumer } from './services/MessageConsumer.js';
 import dotenv from 'dotenv';
 import WhatsAppClient from './services/WhatsAppClient.js';
-import * as Sentry from '@sentry/node'; // Assuming Sentry is configured globally
+import * as Sentry from '@sentry/node';
 
 dotenv.config();
 

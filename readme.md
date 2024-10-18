@@ -72,7 +72,10 @@ API documentation is available at `/swagger`. This documentation provides a visu
    REDIS_PORT=your_redis_port
 
    API_PORT=your_api_port
+
    DATABASE_URL=your_database_url
+
+   SENTRY_DSN=your_sentry_dsn
 
    ```
 
