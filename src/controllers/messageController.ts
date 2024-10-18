@@ -6,15 +6,15 @@ import { logError } from "../shareable/utils/errorLogger.js";
 class MessageController {
   
   public async sendMessage(req: Request, res: Response): Promise<void> {
-    const { phoneNumber, messageText }: CreateMessageRequest = req.body as CreateMessageRequest;
+    const { phone, message }: CreateMessageRequest = req.body as CreateMessageRequest;
 
-    if (!phoneNumber || !messageText) {
+    if (!phone || !message) {
       res.status(400).json({ error: "Invalid input data" });
       return;
     }
 
     try {
-      await MessageQueueService.enqueueMessage({ phoneNumber, messageText });
+      await MessageQueueService.enqueueMessage({ phone, message });
       res.status(201).json({ message: "Message successfully sent" });
     } catch (error: any) {
       logError("Failed to send message:", error);
