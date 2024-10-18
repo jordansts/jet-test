@@ -3,51 +3,31 @@
 
 ## Overview
 
-This project implements a messaging service using the WhatsApp Web API, RabbitMQ for message queuing, and Express.js for the API framework. The service allows sending messages to WhatsApp numbers by publishing messages to a RabbitMQ queue and consuming them.
+This project implements a messaging service using the WhatsApp Web API, RabbitMQ for message queuing, and Express.js for the API framework. The service allows sending messages to WhatsApp numbers by publishing messages to a RabbitMQ queue and consuming them. Additionally, it utilizes BullMQ for managing job queues and Sentry for error logging. All logs are stored in a PostgreSQL database using Prisma for seamless data management.
 
 ## Technologies Used
 
 - **Node.js**: JavaScript runtime environment
+- **Typescript**: Superset of JavaScript for building robust applications
 - **Express.js**: Web framework for building APIs
 - **RabbitMQ**: Message broker for queuing messages
+- **BullMQ**:  Library for managing job queues
 - **WhatsApp Web API**: API for sending messages via WhatsApp
+- **Sentry**: Error tracking and logging service
+- **PostgreSQL**: Database for storing logs and message data (managed using Prisma)
 - **Swagger**: API documentation tool
 
-## Project Structure
-
-```
-.
-├── src
-│   ├── app.js                    # Express app configuration
-│   ├── controllers
-│   │   └── messageController.js  # Controller for handling messages
-│   ├── docs
-│   │   └── swagger.js            # Swagger documentation configuration
-│   ├── middlewares
-│   │   └── errorMiddleware.js     # Error handling middleware
-│   ├── routes
-│   │   └── messageRoutes.js      # Routes for message API
-│   ├── services
-│   │   ├── MessageConsumer.js     # RabbitMQ consumer for messages
-│   │   ├── MessageProducer.js      # RabbitMQ producer for sending messages
-│   │   └── WhatsAppClient.js      # Client for WhatsApp API interactions
-│   └── index.js                  # Entry point for the application
-├── .env                           # Environment variables
-├── package.json                   # Project dependencies
-├── tsconfig.json                  # TypeScript configuration
-└── README.md                      # Project documentation
-```
 
 ## API Endpoints
 
 ### Send Message
 
-- **POST** `/api/messages/send`
+- **POST** `/api/send-message`
 - **Description**: Sends a message to RabbitMQ for delivery via WhatsApp.
 - **Request Body**:
   ```json
   {
-    "phoneNumber": "+550012345678",
+    "phoneNumber": "+551199999999",
     "messageText": "Send the message text here"
   }
   ```
@@ -76,23 +56,44 @@ API documentation is available at `/swagger`. This documentation provides a visu
    npm install
    ```
 
-4. Create a `.env` file in the root directory and define the following variables:
+6. You can use the docker-compose.yml file to create a complete environment for this application:
+   ```bash
+   docker-compose up -d
+   ```
+
+5. Create a `.env` file in the root directory and define the following variables(there's a .env.example, you can just copy and add your changes, the example keeps the docker-compose environment variables):
    ```plaintext
    RABBIT_HOST=your_rabbit_host
    RABBIT_PORT=your_rabbit_port
    RABBIT_USERNAME=your_rabbit_username
    RABBIT_PASSWORD=your_rabbit_password
-   API_PORT=3000
+
+   REDIS_HOST=your_redis_host  
+   REDIS_PORT=your_redis_port
+
+   API_PORT=your_api_port
+   DATABASE_URL=your_database_url
+
    ```
 
-5. Start the application:
+6. Start the application in dev mode:
    ```bash
-   npm start
+   npm run dev
+   ```
+
+7. Build the application:
+   ```bash
+   npm run build dev
+   ```
+
+8. Run the application:
+   ```bash
+   npm run start
    ```
 
 ## Error Handling
 
-The application uses a custom error handling middleware that responds with a structured error object. Errors are logged to the console for debugging purposes.
+The application uses a custom error handling middleware that responds with a structured error object. Errors are logged to the console for debugging purposes. Additionally, Sentry is integrated into the application to capture and log errors, providing valuable insights into any issues that occur in production.
 
 ## Contributing
 
