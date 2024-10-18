@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { MessageQueueService } from "../services/MessageQueue.js";
 import CreateMessageRequest from "../shareable/dtos/message/CreateMessageRequest.js";
+import { logError } from "../shareable/utils/errorLogger.js";
 
 class MessageController {
   
@@ -15,8 +16,8 @@ class MessageController {
     try {
       await MessageQueueService.enqueueMessage({ phoneNumber, messageText });
       res.status(201).json({ message: "Message successfully sent" });
-    } catch (error) {
-      console.error("Failed to send message:", error);
+    } catch (error: any) {
+      logError("Failed to send message:", error);
       res.status(500).json({ error: "Failed to send message" });
     }
   }

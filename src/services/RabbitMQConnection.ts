@@ -1,13 +1,14 @@
-import amqp, { Connection } from "amqplib";
+import amqp, { Connection, Options } from "amqplib";
 import * as Sentry from "@sentry/node";
+import { logError } from "../shareable/utils/errorLogger.js";
 
 export class RabbitMQConnection {
-  private rabbitHost: string;
-  private rabbitPort: number;
-  private rabbitUsername: string;
-  private rabbitPassword: string;
-  private readonly retryAttempts = 5;
-  private readonly retryDelay = 2000;
+  private readonly rabbitHost: string;
+  private readonly rabbitPort: number;
+  private readonly rabbitUsername: string;
+  private readonly rabbitPassword: string;
+  private readonly retryAttempts: number = 5;
+  private readonly retryDelay: number = 2000;
 
   constructor() {
     const { RABBIT_HOST, RABBIT_PORT, RABBIT_USERNAME, RABBIT_PASSWORD } = process.env;
@@ -28,19 +29,16 @@ export class RabbitMQConnection {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  async createConnection(): Promise<Connection> {
+  public async createConnection(): Promise<Connection> {
     for (let attempt = 0; attempt < this.retryAttempts; attempt++) {
       try {
-        return await amqp.connect({
-          hostname: this.rabbitHost,
-          port: this.rabbitPort,
-          username: this.rabbitUsername,
-          password: this.rabbitPassword,
-        });
-      } catch (error) {
-        console.error("Failed to connect to RabbitMQ:", error);
+        const connection = await this.connectToRabbitMQ();
+        console.log(`Connected to RabbitMQ on attempt ${attempt + 1}`);
+        return connection;
+      } catch (error: any) {
+        logError(`Connection attempt ${attempt + 1} failed:`, error);
         Sentry.captureException(error);
-        
+
         if (attempt === this.retryAttempts - 1) {
           const finalError = new Error("Exceeded maximum connection attempts to RabbitMQ.");
           Sentry.captureException(finalError);
@@ -51,8 +49,20 @@ export class RabbitMQConnection {
         await this.sleep(this.retryDelay);
       }
     }
+
     const fallbackError = new Error("Connection failed after retries.");
     Sentry.captureException(fallbackError);
     throw fallbackError;
+  }
+
+  private async connectToRabbitMQ(): Promise<Connection> {
+    const connectionOptions: Options.Connect = {
+      hostname: this.rabbitHost,
+      port: this.rabbitPort,
+      username: this.rabbitUsername,
+      password: this.rabbitPassword,
+    };
+
+    return await amqp.connect(connectionOptions);
   }
 }

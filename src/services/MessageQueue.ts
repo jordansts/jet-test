@@ -15,6 +15,9 @@ export interface MessagePayload {
 }
 
 export class MessageQueueService {
+    private static totalJobs = 0;
+    private static processedJobs = 0;
+
     static validatePayload(payload: MessagePayload): void {
         const { phoneNumber, messageText } = payload;
 
@@ -31,8 +34,9 @@ export class MessageQueueService {
         try {
             this.validatePayload(payload);
             await messageQueue.add(payload, { delay: 5000 });
+            this.totalJobs++;
         } catch (error) {
-            console.error("Failed to enqueue message:", error);
+            console.error("Failed to enqueue message");
             Sentry.captureException(error);
             throw error;
         }
@@ -51,8 +55,17 @@ export class MessageQueueService {
                 Sentry.captureException(error);
                 throw new Error("Failed to send message");
             }
+
+            this.processedJobs++;
+            if (this.processedJobs === this.totalJobs) {
+                await this.closeConnection();
+            }
         });
     }
-}
 
-MessageQueueService.processQueue();
+    static async closeConnection(): Promise<void> {
+        console.log("All messages processed. Closing connection...");
+        await messageQueue.close();
+        console.log("Connection closed.");
+    }
+}
