@@ -56,12 +56,17 @@ API documentation is available at `/swagger`. This documentation provides a visu
    npm install
    ```
 
-6. You can use the docker-compose.yml file to create a complete environment for this application:
+4. Update the database with the migrations:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. You can use the docker-compose.yml file to create a complete environment for this application:
    ```bash
    docker-compose up -d
    ```
 
-5. Create a `.env` file in the root directory and define the following variables(there's a .env.example, you can just copy and add your changes, the example keeps the docker-compose environment variables):
+6. Create a `.env` file in the root directory and define the following variables(there's a .env.example, you can just copy and add your changes, the example keeps the docker-compose environment variables):
    ```plaintext
    RABBIT_HOST=your_rabbit_host
    RABBIT_PORT=your_rabbit_port
@@ -79,17 +84,17 @@ API documentation is available at `/swagger`. This documentation provides a visu
 
    ```
 
-6. Start the application in dev mode:
+7. Start the application in dev mode:
    ```bash
    npm run dev
    ```
 
-7. Build the application:
+8. Build the application:
    ```bash
    npm run build
    ```
 
-8. Run the application:
+9. Run the application:
    ```bash
    npm run start
    ```
